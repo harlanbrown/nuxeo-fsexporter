@@ -27,9 +27,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
 import org.nuxeo.runtime.api.Framework;
@@ -65,14 +65,14 @@ public class FSExporterTestAttachedFiles {
         ArrayList<Map<String, Serializable>> listblobs = new ArrayList<Map<String, Serializable>>();
 
         Map<String, Serializable> mapBlob = new HashMap<String, Serializable>();
-        Blob blob1 = new StringBlob("blob1");
+        Blob blob1 = Blobs.createBlob("blob1");
         blob1.setFilename("blob1.txt");
         mapBlob.put("file", (Serializable) blob1);
         mapBlob.put("filename", "blob1.txt");
         listblobs.add(mapBlob);
 
         Map<String, Serializable> mapBlob2 = new HashMap<String, Serializable>();
-        Blob blob2 = new StringBlob("blob2");
+        Blob blob2 = Blobs.createBlob("blob2");
         blob2.setFilename("blob2.txt");
         mapBlob2.put("file", (Serializable) blob2);
         mapBlob2.put("filename", "blob2.txt");
@@ -82,9 +82,8 @@ public class FSExporterTestAttachedFiles {
         DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "myfile", "File");
         file.setPropertyValue("dc:title", "Mon premier fichier");
 
-        Blob blob = new StringBlob("some content");
+        Blob blob = Blobs.createBlob("some content");
         blob.setFilename("MyFileWithBlobs.txt");
-        blob.setMimeType("text/plain");
         file.setPropertyValue("file:content", (Serializable) blob);
         file.setPropertyValue("files:files", listblobs);
 

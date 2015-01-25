@@ -19,13 +19,14 @@ package org.nuxeo.io.fsexporter.test;
 
 import java.io.File;
 import java.io.Serializable;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
 import org.nuxeo.runtime.api.Framework;
@@ -69,9 +70,8 @@ public class FSExporterTestStructure {
         DocumentModel fileInSection = session.createDocumentModel(mySection.getPathAsString(), "fileInSection", "File");
         fileInSection.setPropertyValue("dc:title", "my file in section");
 
-        Blob blobSection = new StringBlob("some content");
+        Blob blobSection = Blobs.createBlob("some content");
         blobSection.setFilename("My File In Section.txt");
-        blobSection.setMimeType("text/plain");
         fileInSection.setPropertyValue("file:content", (Serializable) blobSection);
         session.createDocument(fileInSection);
 
@@ -79,9 +79,8 @@ public class FSExporterTestStructure {
                 "File");
         fileInWorkspace.setPropertyValue("dc:title", "my file in workspace");
 
-        Blob blobWorkspace = new StringBlob("some content");
+        Blob blobWorkspace = Blobs.createBlob("some content");
         blobWorkspace.setFilename("My File In Workspace.txt");
-        blobWorkspace.setMimeType("text/plain");
         fileInWorkspace.setPropertyValue("file:content", (Serializable) blobWorkspace);
         session.createDocument(fileInWorkspace);
 
@@ -89,9 +88,8 @@ public class FSExporterTestStructure {
                 "File");
         fileInTemplate.setPropertyValue("dc:title", "my file in template");
 
-        Blob blobTemplate = new StringBlob("some content");
+        Blob blobTemplate = Blobs.createBlob("some content");
         blobTemplate.setFilename("My File In Template.txt");
-        blobTemplate.setMimeType("text/plain");
         fileInTemplate.setPropertyValue("file:content", (Serializable) blobTemplate);
         session.createDocument(fileInTemplate);
 

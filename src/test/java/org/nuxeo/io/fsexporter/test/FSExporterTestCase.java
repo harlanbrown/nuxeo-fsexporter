@@ -18,13 +18,14 @@ package org.nuxeo.io.fsexporter.test;
 
 import java.io.File;
 import java.io.Serializable;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
 import org.nuxeo.runtime.api.Framework;
@@ -58,9 +59,8 @@ public class FSExporterTestCase {
         DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "myfile", "File");
         file.setPropertyValue("dc:title", "Mon premier fichier");
 
-        Blob blob = new StringBlob("some content");
+        Blob blob = Blobs.createBlob("some content");
         blob.setFilename("MyFile.txt");
-        blob.setMimeType("text/plain");
         file.setPropertyValue("file:content", (Serializable) blob);
         session.createDocument(file);
 

@@ -19,13 +19,14 @@ package org.nuxeo.io.fsexporter.test;
 
 import java.io.File;
 import java.io.Serializable;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
 import org.nuxeo.runtime.api.Framework;
@@ -69,27 +70,24 @@ public class FSExporterTestCase2 {
         DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "myfile", "File");
         file.setPropertyValue("dc:title", "Mon premier fichier");
 
-        Blob blob = new StringBlob("some content");
+        Blob blob = Blobs.createBlob("some content");
         blob.setFilename("MyFile.txt");
-        blob.setMimeType("text/plain");
         file.setPropertyValue("file:content", (Serializable) blob);
         session.createDocument(file);
 
         DocumentModel file2 = session.createDocumentModel(folder2.getPathAsString(), "myfile2", "File");
         file2.setPropertyValue("dc:title", "Mon deuxieme fichier");
 
-        Blob blob2 = new StringBlob("some content");
+        Blob blob2 = Blobs.createBlob("some content");
         blob2.setFilename("MyFile2.txt");
-        blob2.setMimeType("text/plain");
         file2.setPropertyValue("file:content", (Serializable) blob2);
         session.createDocument(file2);
 
         DocumentModel fileSubFolder = session.createDocumentModel(subFolder.getPathAsString(), "fileSubFolder", "File");
         fileSubFolder.setPropertyValue("dc:title", "mon fichier dans un subfolder");
 
-        Blob blobSubFolder = new StringBlob("some content");
+        Blob blobSubFolder = Blobs.createBlob("some content");
         blobSubFolder.setFilename("MyFileSubFolder.txt");
-        blobSubFolder.setMimeType("text/plain");
         fileSubFolder.setPropertyValue("file:content", (Serializable) blobSubFolder);
         session.createDocument(fileSubFolder);
 
