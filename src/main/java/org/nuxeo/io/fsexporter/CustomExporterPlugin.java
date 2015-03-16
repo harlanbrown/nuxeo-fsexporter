@@ -32,34 +32,36 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
 
     @Override
     public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception {
+        File folder = null;
+        File newFolder = null;
+        folder = new File(fsPath);
 
-        // code to export XML
-        BlobHolder myblobholder = docfrom.getAdapter(BlobHolder.class);
-        String FileXMLNameToExport = "";
-        File folder = new File(fsPath);
-
-        if (myblobholder != null) {
-            java.util.List<Blob> listblobs = myblobholder.getBlobs();
-            int i = 1;
-            for (Blob blob : listblobs) {
-                // call the method to determine the name of the exported file
-                FileXMLNameToExport = getFileName(blob, docfrom, folder, i);
-                i++;
-            }
-            exportFileInXML(session, docfrom, fsPath + "/" + FileXMLNameToExport);
+        // if target directory doesn't exist, create it
+        if (!folder.exists()) {
+            folder.mkdir();
         }
-        // export with default exporter all the documents
-        super.serialize(session, docfrom, fsPath);
-        return null;
-    }
 
-    protected void exportFileInXML(CoreSession session, DocumentModel docfrom, String pathtoexport) throws Exception {
-        DocumentPipe pipe = new DocumentPipeImpl(10);
-        SingleDocumentReader reader = new SingleDocumentReader(session, docfrom);
-        pipe.setReader(reader);
-        XMLDocumentWriter writer = new XMLDocumentWriter(new File(pathtoexport + ".xml"));
-        pipe.setWriter(writer);
-        pipe.run();
+        if (docfrom.hasFacet("Folderish")) {
+            newFolder = new File(fsPath + "/" + docfrom.getName());
+            newFolder.mkdir();
+        }
+
+        // get all the blobs of the blobholder
+        BlobHolder myblobholder = docfrom.getAdapter(BlobHolder.class);
+        if (myblobholder != null) {
+            Blob blob = myblobholder.getBlob();
+        	if (blob != null) {
+                // call the method to determine the name of the exported file
+                String FileNameToExport = getFileName(blob, docfrom, folder, 1);
+                // export the file to the target file system
+                File target = new File(folder, FileNameToExport);
+                blob.transferTo(target);
+            }
+        }
+        if (newFolder != null) {
+            folder = newFolder;
+        }
+        return folder;
     }
 
 }
