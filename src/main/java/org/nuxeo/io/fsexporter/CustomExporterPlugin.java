@@ -18,18 +18,34 @@
 package org.nuxeo.io.fsexporter;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.SingleDocumentReader;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.runtime.api.Framework;
+
+import com.allen_sauer.gwt.log.client.Log;
 
 public class CustomExporterPlugin extends DefaultExporterPlugin {
 
+	
     @Override
     public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception {
         File folder = null;
@@ -49,14 +65,14 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         // get all the blobs of the blobholder
         BlobHolder myblobholder = docfrom.getAdapter(BlobHolder.class);
         if (myblobholder != null) {
-            Blob blob = myblobholder.getBlob();
-        	if (blob != null) {
-                // call the method to determine the name of the exported file
+        	Blob blob = myblobholder.getBlob();
+        	if (blob != null && blob.getMimeType().equals("application/pdf")) {
+        	    // call the method to determine the name of the exported file
                 String FileNameToExport = getFileName(blob, docfrom, folder, 1);
                 // export the file to the target file system
                 File target = new File(folder, FileNameToExport);
                 blob.transferTo(target);
-            }
+        	}
         }
         if (newFolder != null) {
             folder = newFolder;
