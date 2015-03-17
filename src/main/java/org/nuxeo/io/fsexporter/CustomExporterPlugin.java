@@ -41,8 +41,6 @@ import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
-import com.allen_sauer.gwt.log.client.Log;
-
 public class CustomExporterPlugin extends DefaultExporterPlugin {
 
 	
