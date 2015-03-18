@@ -71,22 +71,22 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         // get all the blobs of the blobholder
         BlobHolder myblobholder = docfrom.getAdapter(BlobHolder.class);
         if (myblobholder != null) {
-        	Blob blob = myblobholder.getBlob();
-        	if (blob != null && blob.getMimeType().equals("application/pdf")) {
+            Blob blob = myblobholder.getBlob();
+            if (blob != null && blob.getMimeType().equals("application/pdf")) {
         	    // call the method to determine the name of the exported file
                 String FileNameToExport = getFileName(blob, docfrom, folder, 1);
                 // export the file to the target file system
                 try {
-                	File target = new File(folder, FileNameToExport);
-                	blob.transferTo(target);
-                	log.debug("Wrote file " + target.getAbsolutePath());
+                        File target = new File(folder, FileNameToExport);
+                        blob.transferTo(target);
+                        log.debug("Wrote file " + target.getAbsolutePath());
                 }
                 catch (FileNotFoundException e) {
-                	log.debug("Could not write file");                	
+                        log.debug("Could not write file");                	
                 }
-        	}
-        } else {
-        	log.debug("No files found");                	
+            } else {
+                    log.debug("No files found");                	
+            }
         }
         if (newFolder != null) {
             folder = newFolder;
