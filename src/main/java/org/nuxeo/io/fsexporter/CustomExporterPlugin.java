@@ -18,12 +18,15 @@
 package org.nuxeo.io.fsexporter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -41,11 +44,16 @@ import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
+
 public class CustomExporterPlugin extends DefaultExporterPlugin {
 
+	private static final Log log = LogFactory.getLog(CustomExporterPlugin.class);
 	
     @Override
     public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception {
+    	
+    	log.debug("Exporting from document " + docfrom.getTitle() + " " + docfrom.toString());
+    	
         File folder = null;
         File newFolder = null;
         folder = new File(fsPath);
@@ -68,9 +76,17 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         	    // call the method to determine the name of the exported file
                 String FileNameToExport = getFileName(blob, docfrom, folder, 1);
                 // export the file to the target file system
-                File target = new File(folder, FileNameToExport);
-                blob.transferTo(target);
+                try {
+                	File target = new File(folder, FileNameToExport);
+                	blob.transferTo(target);
+                	log.debug("Wrote file " + target.getAbsolutePath());
+                }
+                catch (FileNotFoundException e) {
+                	log.debug("Could not write file");                	
+                }
         	}
+        } else {
+        	log.debug("No files found");                	
         }
         if (newFolder != null) {
             folder = newFolder;
