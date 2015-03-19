@@ -73,19 +73,19 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         if (myblobholder != null) {
             Blob blob = myblobholder.getBlob();
             if (blob != null && blob.getMimeType().equals("application/pdf")) {
-        	    // call the method to determine the name of the exported file
+        	// call the method to determine the name of the exported file
                 String FileNameToExport = getFileName(blob, docfrom, folder, 1);
                 // export the file to the target file system
                 try {
-                        File target = new File(folder, FileNameToExport);
-                        blob.transferTo(target);
-                        log.debug("Wrote file " + target.getAbsolutePath());
+                    File target = new File(folder, FileNameToExport);
+                    blob.transferTo(target);
+                    log.debug("Wrote file " + target.getAbsolutePath());
                 }
                 catch (FileNotFoundException e) {
-                        log.debug("Could not write file");                	
+                    log.debug("Could not write file");                	
                 }
             } else {
-                    log.debug("No files found");                	
+                log.debug("No files found");                	
             }
         }
         if (newFolder != null) {
@@ -94,4 +94,76 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         return folder;
     }
 
+    @Override
+    public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String myPageProvider)
+            throws ClientException, Exception {
+
+        PageProviderService ppService = null;
+        try {
+            ppService = Framework.getService(PageProviderService.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+
+        PageProvider<DocumentModel> pp = null;
+        String query = "";
+
+        // if the user gives a query, we build a new Page Provider with the
+        // query provided
+        if (myPageProvider != null) {
+            if (myPageProvider.contains("WHERE")) {
+                query = myPageProvider + " AND ecm:parentId = ?";
+            } else {
+                query = myPageProvider + " where ecm:parentId = ?";
+            }
+        } else {
+            query = "SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:mixinType !='HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !='deleted'";
+        }
+        CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
+        desc.setPattern(query);
+        
+        log.debug(query);
+
+        pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null, null, null, props,
+                new Object[] { doc.getId() });
+        
+        
+        int countPages = 1;
+        // get all the documents of the first page
+        DocumentModelList children = new DocumentModelListImpl(pp.getCurrentPage());
+
+        // if there is more than one page, get the children of all the other
+        // pages and put into one list
+        List<DocumentModel> childrenTemp = new ArrayList<DocumentModel>();
+        
+        
+        log.error(countPages);
+        log.error(childrenTemp.size());
+        log.error(pp.getParameters()[0]);
+        log.error(pp.getResultsCount());
+        
+        if (pp.getNumberOfPages() > 1) {
+            while (countPages < pp.getNumberOfPages()) {
+                pp.nextPage();
+                childrenTemp = pp.getCurrentPage();
+                
+                for (DocumentModel childTemp : childrenTemp) {
+                    children.add(childTemp);
+                }
+                countPages++;
+                log.error(countPages);
+                log.error(childrenTemp.size());
+                log.error(pp.getParameters()[0]);
+                log.error(pp.getResultsCount());
+                
+
+            }
+        }
+        // return the complete list of documents
+        return children;
+    }
+    
 }
