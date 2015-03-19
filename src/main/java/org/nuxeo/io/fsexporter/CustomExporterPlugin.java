@@ -141,7 +141,6 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         
         
         log.error(countPages);
-        log.error(childrenTemp.size());
         log.error(pp.getParameters()[0]);
         log.error(pp.getResultsCount());
         
@@ -163,6 +162,7 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
             }
         }
         // return the complete list of documents
+        log.error(children.size());
         return children;
     }
     
