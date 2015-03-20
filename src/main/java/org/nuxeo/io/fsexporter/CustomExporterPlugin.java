@@ -124,45 +124,29 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         }
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
-        
-        log.debug(query);
 
-        pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null, null, null, props,
+        // set this up with pageSize 100
+        pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null, null, (long)100, null, props,
                 new Object[] { doc.getId() });
-        
         
         int countPages = 1;
         // get all the documents of the first page
         DocumentModelList children = new DocumentModelListImpl(pp.getCurrentPage());
-
         // if there is more than one page, get the children of all the other
         // pages and put into one list
         List<DocumentModel> childrenTemp = new ArrayList<DocumentModel>();
-        
-        
-        log.error(countPages);
-        log.error(pp.getParameters()[0]);
-        log.error(pp.getResultsCount());
         
         if (pp.getNumberOfPages() > 1) {
             while (countPages < pp.getNumberOfPages()) {
                 pp.nextPage();
                 childrenTemp = pp.getCurrentPage();
-                
                 for (DocumentModel childTemp : childrenTemp) {
                     children.add(childTemp);
                 }
                 countPages++;
-                log.error(countPages);
-                log.error(childrenTemp.size());
-                log.error(pp.getParameters()[0]);
-                log.error(pp.getResultsCount());
-                
-
             }
         }
         // return the complete list of documents
-        log.error(children.size());
         return children;
     }
     
